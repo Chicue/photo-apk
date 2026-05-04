@@ -86,7 +86,126 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  //Función para construir la interfaz de usuario.
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFCDCCDE),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFCDCCDE),
+        elevation: 0,
+        centerTitle: true,
+        title: const Text(
+          "Foto Profesional",
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+
+            /// 🔲 CUADRO DE IMAGEN (CLICKABLE)
+            GestureDetector(
+              onTap: pickImage,
+              child: Container(
+                height: 220,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.grey.shade400, width: 2),
+                ),
+                child: _image == null
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Icon(
+                            Icons.cloud_upload,
+                            size: 50,
+                            color: Colors.grey,
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            "Toca para subir tu foto",
+                            style: TextStyle(color: Colors.grey, fontSize: 16),
+                          ),
+                        ],
+                      )
+                    : ClipRRect(
+                        borderRadius: BorderRadius.circular(18),
+                        child: Image.file(_image!, fit: BoxFit.cover),
+                      ),
+              ),
+            ),
+
+            const SizedBox(height: 25),
+
+            /// 🔘 BOTÓN PROCESAR (SOLO SI HAY IMAGEN)
+            if (_image != null)
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  onPressed: uploadImage,
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.resolveWith<Color>((
+                      states,
+                    ) {
+                      if (states.contains(MaterialState.pressed)) {
+                        return const Color(0xFF552E8B);
+                      }
+                      return const Color(0xFF5D01E1);
+                    }),
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                  ),
+                  child: const Text(
+                    "Procesar Imagen",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+
+            const SizedBox(height: 25),
+
+            /// 🖼 RESULTADO
+            if (_resultUrl != null)
+              Column(
+                children: [
+                  const Text(
+                    "Resultado",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    height: 220,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.grey.shade400),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(18),
+                      child: Image.network(_resultUrl!, fit: BoxFit.cover),
+                    ),
+                  ),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /*//Función para construir la interfaz de usuario.
   @override
   Widget build(BuildContext context) {
     //Regresa un Scaffold que es el esqueleto de la pantalla.
@@ -125,5 +244,5 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
-  }
+  }*/
 }
