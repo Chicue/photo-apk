@@ -12,6 +12,8 @@ void main() {
   runApp(const MyApp());
 }
 
+bool _isLoading = false;
+
 //Es un Widget sin estado (StatelessWidget) que define la estructura básica de la aplicación.
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -62,6 +64,7 @@ class _HomePageState extends State<HomePage> {
     //Si no hay imagen, no hace nada.
     if (_image == null) return;
 
+    setState(() => _isLoading = true);
     //Obtiene el nombre del archivo.
     String fileName = _image!.path.split('/').last;
 
@@ -78,11 +81,16 @@ class _HomePageState extends State<HomePage> {
       );
       //Actualiza el estado con la URL del resultado.
       setState(() {
+        _isLoading = false;
         _resultUrl = response.data['url'];
       });
       //Si hay un error, lo imprime.
     } catch (e) {
-      print("Error: $e");
+      setState(() => _isLoading = false);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Error procesando la imagen")),
+      );
     }
   }
 
@@ -99,150 +107,150 @@ class _HomePageState extends State<HomePage> {
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
 
-            /// 🔲 CUADRO DE IMAGEN (CLICKABLE)
-            GestureDetector(
-              onTap: pickImage,
-              child: Container(
-                height: 220,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.grey.shade400, width: 2),
-                ),
-                child: _image == null
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(
-                            Icons.cloud_upload,
-                            size: 50,
-                            color: Colors.grey,
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            "Toca para subir tu foto",
-                            style: TextStyle(color: Colors.grey, fontSize: 16),
-                          ),
-                        ],
-                      )
-                    : ClipRRect(
-                        borderRadius: BorderRadius.circular(18),
-                        child: Image.file(_image!, fit: BoxFit.cover),
-                      ),
-              ),
-            ),
+      body: Stack(
+        children: [
+          /// 🟢 CONTENIDO NORMAL
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
 
-            const SizedBox(height: 25),
-
-            /// 🔘 BOTÓN PROCESAR (SOLO SI HAY IMAGEN)
-            if (_image != null)
-              SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: ElevatedButton(
-                  onPressed: uploadImage,
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.resolveWith<Color>((
-                      states,
-                    ) {
-                      if (states.contains(MaterialState.pressed)) {
-                        return const Color(0xFF552E8B);
-                      }
-                      return const Color(0xFF5D01E1);
-                    }),
-                    shape: MaterialStateProperty.all(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                    ),
-                  ),
-                  child: const Text(
-                    "Procesar Imagen",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-
-            const SizedBox(height: 25),
-
-            /// 🖼 RESULTADO
-            if (_resultUrl != null)
-              Column(
-                children: [
-                  const Text(
-                    "Resultado",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  const SizedBox(height: 10),
-                  Container(
+                // 🔲 IMAGEN
+                GestureDetector(
+                  onTap: pickImage,
+                  child: Container(
                     height: 220,
                     width: double.infinity,
                     decoration: BoxDecoration(
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.grey.shade400),
+                      border: Border.all(color: Colors.grey.shade400, width: 2),
                     ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(18),
-                      child: Image.network(_resultUrl!, fit: BoxFit.cover),
+                    child: _image == null
+                        ? Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Icon(
+                                Icons.cloud_upload,
+                                size: 50,
+                                color: Colors.grey,
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                "Toca para subir tu foto",
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          )
+                        : ClipRRect(
+                            borderRadius: BorderRadius.circular(18),
+                            child: Image.file(_image!, fit: BoxFit.cover),
+                          ),
+                  ),
+                ),
+
+                const SizedBox(height: 25),
+
+                /// 🔘 BOTÓN
+                if (_image != null)
+                  SizedBox(
+                    width: double.infinity,
+                    height: 55,
+                    child: ElevatedButton(
+                      onPressed: uploadImage,
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.resolveWith<Color>((states) {
+                              if (states.contains(MaterialState.pressed)) {
+                                return const Color(0xFF552E8B);
+                              }
+                              return const Color(0xFF5D01E1);
+                            }),
+                        shape: MaterialStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
+                      ),
+                      child: const Text(
+                        "Procesar Imagen",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
-                ],
+
+                const SizedBox(height: 25),
+
+                /// 🖼 RESULTADO
+                if (_resultUrl != null)
+                  Column(
+                    children: [
+                      const Text(
+                        "Resultado",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Container(
+                        height: 220,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: Colors.grey.shade400),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(18),
+                          child: Image.network(_resultUrl!, fit: BoxFit.cover),
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+          ),
+
+          /// 🔴 OVERLAY (CORRECTO)
+          if (_isLoading)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withOpacity(0.7),
+                child: const Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(color: Colors.white),
+                      SizedBox(height: 20),
+                      Text(
+                        "Procesando tu foto...",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        "Esto puede tardar unos segundos",
+                        style: TextStyle(color: Colors.white70, fontSize: 14),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-          ],
-        ),
+            ),
+        ],
       ),
     );
   }
-
-  /*//Función para construir la interfaz de usuario.
-  @override
-  Widget build(BuildContext context) {
-    //Regresa un Scaffold que es el esqueleto de la pantalla.
-    return Scaffold(
-      //Barra superior.
-      appBar: AppBar(title: const Text("Foto Profesional")),
-      //Cuerpo de la pantalla.
-      body: Padding(
-        //Espaciado.
-        padding: const EdgeInsets.all(16),
-        //Column es un widget que permite mostrar widgets en una columna vertical.
-        child: Column(
-          //Lista de widgets a mostrar.
-          children: [
-            //Botón para seleccionar la imagen.
-            ElevatedButton(
-              onPressed: pickImage,
-              child: const Text("Seleccionar Imagen"),
-            ),
-            //Espaciado.
-            const SizedBox(height: 10),
-            //Si hay imagen, la muestra.
-            if (_image != null) Image.file(_image!, height: 200),
-            //Espaciado.
-            const SizedBox(height: 10),
-            //Botón para subir la imagen.
-            ElevatedButton(
-              onPressed: uploadImage,
-              child: const Text("Procesar Imagen"),
-            ),
-            //Espaciado.
-            const SizedBox(height: 20),
-            //Si hay resultado, lo muestra.
-            if (_resultUrl != null) Image.network(_resultUrl!, height: 200),
-          ],
-        ),
-      ),
-    );
-  }*/
 }
