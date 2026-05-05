@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 //paquete para enviar solicitudes HTTP, en este caso, la foto al servidor
 import 'package:dio/dio.dart';
+//paquete para comparar imágenes
+import 'package:image_compare_slider/image_compare_slider.dart';
 
 //Es la función que Flutter busca para arrancar la app. Llama a runApp pasando tu widget inicial.
 void main() {
@@ -203,7 +205,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       const SizedBox(height: 10),
                       Container(
-                        height: 220,
+                        height: 250,
                         width: double.infinity,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
@@ -211,7 +213,20 @@ class _HomePageState extends State<HomePage> {
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(18),
-                          child: Image.network(_resultUrl!, fit: BoxFit.cover),
+                          child: (_resultUrl != null && _image != null)
+                              ? ImageCompareSlider(
+                                  itemOne: Image.file(
+                                    _image!,
+                                    fit: BoxFit.cover,
+                                  ),
+                                  itemTwo: Image.network(
+                                    _resultUrl!,
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
+                              : const Center(
+                                  child: Text("Aún no hay imagen procesada"),
+                                ),
                         ),
                       ),
                     ],
