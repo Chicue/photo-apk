@@ -132,7 +132,7 @@ class _Step1PhotoState extends State<Step1Photo> {
             style: TextButton.styleFrom(foregroundColor: kPurple),
           ),
 
-        const Spacer(),
+        const SizedBox(height: 32),
 
         PrimaryButton(
           label: 'Continuar',

@@ -144,7 +144,7 @@ class _Step3BackgroundState extends State<Step3Background> {
           ),
         ),
 
-        const Spacer(),
+        const SizedBox(height: 32),
 
         PrimaryButton(
           label: 'Continuar',

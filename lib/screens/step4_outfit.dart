@@ -67,6 +67,7 @@ class _Step4OutfitState extends State<Step4Outfit> {
                     ],
                   ),
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       // Ícono grande
                       Container(
@@ -149,7 +150,7 @@ class _Step4OutfitState extends State<Step4Outfit> {
           ),
         ),
 
-        const Spacer(),
+        const SizedBox(height: 32),
 
         PrimaryButton(
           label: 'Generar foto profesional',

@@ -36,10 +36,10 @@ class _PhotoWizardState extends State<PhotoWizard> {
   void _reset() {
     // Limpia las opciones y vuelve al inicio
     setState(() {
-      _options.photo          = null;
-      _options.documentType   = null;
+      _options.photo = null;
+      _options.documentType = null;
       _options.backgroundType = null;
-      _options.outfitType     = null;
+      _options.outfitType = null;
     });
     _goTo(0);
   }
@@ -60,8 +60,11 @@ class _PhotoWizardState extends State<PhotoWizard> {
         centerTitle: true,
         leading: _currentStep > 0 && _currentStep < 4
             ? IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                    size: 18, color: Color(0xFF374151)),
+                icon: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  size: 18,
+                  color: Color(0xFF374151),
+                ),
                 onPressed: _back,
               )
             : const SizedBox.shrink(),
@@ -83,20 +86,32 @@ class _PhotoWizardState extends State<PhotoWizard> {
       ),
       body: PageView(
         controller: _pageController,
-        physics: const NeverScrollableScrollPhysics(), // solo navegamos por botones
+        physics:
+            const NeverScrollableScrollPhysics(), // solo navegamos por botones
         children: [
-          _Wrapper(child: Step1Photo(options: _options, onNext: _next)),
           _Wrapper(
-              child: Step2Document(
-                  options: _options, onNext: _next, onBack: _back)),
+            child: Step1Photo(options: _options, onNext: _next),
+          ),
           _Wrapper(
-              child: Step3Background(
-                  options: _options, onNext: _next, onBack: _back)),
+            child: Step2Document(
+              options: _options,
+              onNext: _next,
+              onBack: _back,
+            ),
+          ),
           _Wrapper(
-              child: Step4Outfit(
-                  options: _options, onNext: _next, onBack: _back)),
+            child: Step3Background(
+              options: _options,
+              onNext: _next,
+              onBack: _back,
+            ),
+          ),
           _Wrapper(
-              child: Step5Result(options: _options, onReset: _reset)),
+            child: Step4Outfit(options: _options, onNext: _next, onBack: _back),
+          ),
+          _Wrapper(
+            child: Step5Result(options: _options, onReset: _reset),
+          ),
         ],
       ),
     );
@@ -112,12 +127,7 @@ class _Wrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          minHeight: MediaQuery.of(context).size.height - 160,
-        ),
-        child: IntrinsicHeight(child: child),
-      ),
+      child: child,
     );
   }
 }

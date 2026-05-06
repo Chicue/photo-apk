@@ -36,33 +36,33 @@ class _Step2DocumentState extends State<Step2Document> {
         const Text('Selecciona el documento para el que necesitas la foto',
             style: TextStyle(fontSize: 13, color: Color(0xFF6B7280))),
         const SizedBox(height: 16),
-        Expanded(
-          child: ListView(
-            children: _docs.map((doc) {
-              final selected = widget.options.documentType == doc;
-              return OptionCard(
-                selected: selected,
-                onTap: () => setState(() => widget.options.documentType = doc),
-                leading: Container(
-                  width: 42,
-                  height: 42,
-                  decoration: BoxDecoration(
-                    color: selected
-                        ? kPurple.withOpacity(0.1)
-                        : const Color(0xFFF3F4F6),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(doc.icon,
-                      color: selected ? kPurple : const Color(0xFF6B7280),
-                      size: 22),
+        ListView(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          children: _docs.map((doc) {
+            final selected = widget.options.documentType == doc;
+            return OptionCard(
+              selected: selected,
+              onTap: () => setState(() => widget.options.documentType = doc),
+              leading: Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: selected
+                      ? kPurple.withOpacity(0.1)
+                      : const Color(0xFFF3F4F6),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                title: doc.label,
-                subtitle: doc.dimensions,
-              );
-            }).toList(),
-          ),
+                child: Icon(doc.icon,
+                    color: selected ? kPurple : const Color(0xFF6B7280),
+                    size: 22),
+              ),
+              title: doc.label,
+              subtitle: doc.dimensions,
+            );
+          }).toList(),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 24),
         PrimaryButton(
           label: 'Continuar',
           icon: Icons.arrow_forward_rounded,

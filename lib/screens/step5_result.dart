@@ -73,7 +73,8 @@ class _Step5ResultState extends State<Step5Result> {
         const SizedBox(height: 20),
 
         // ── Área de resultado ────────────────────────────────────────────
-        Expanded(
+        SizedBox(
+          height: 350,
           child: _loading
               ? _buildLoading()
               : _error != null
@@ -192,7 +193,8 @@ class _Step5ResultState extends State<Step5Result> {
         _OptionsChip(widget.options),
         const SizedBox(height: 16),
         // Comparador deslizable
-        Expanded(
+        SizedBox(
+          height: 300,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: ImageCompareSlider(
