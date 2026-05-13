@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:image_compare_slider/image_compare_slider.dart';
+
 import '../models/photo_options.dart';
 import '../services/api_service.dart';
 import '../widgets/common_widgets.dart';
@@ -195,57 +195,150 @@ class _Step5ResultState extends State<Step5Result> {
 
   // ── Resultado ────────────────────────────────────────────────────────────
   Widget _buildResult() {
-    // extra: píxeles extra a cada lado para "escapar" el padding del padre (20px)
-    // → margen final desde el borde de pantalla: 20 - 8 = 12px
-    const double extra = 8.0;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Badges de opciones seleccionadas (centrados)
         _OptionsChip(widget.options),
         const SizedBox(height: 14),
         Expanded(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return Transform.translate(
-                offset: const Offset(-extra, 0),
-                child: SizedBox(
-                  width: constraints.maxWidth + extra * 2,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(18),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.12),
-                          blurRadius: 14,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    clipBehavior: Clip.antiAlias,
-                    child: ImageCompareSlider(
-                      itemOne: Image.file(
-                        widget.options.photo!,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: double.infinity,
-                      ),
-                      itemTwo: Image.network(
-                        _resultUrl!,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: double.infinity,
-                      ),
-                      handleSize: const Size(44, 44),
-                      dividerColor: kPurple,
-                    ),
-                  ),
-                ),
-              );
-            },
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(18),
+            child: _BeforeAfterSlider(
+              before: Image.file(
+                widget.options.photo!,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
+              ),
+              after: Image.network(
+                _resultUrl!,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
+              ),
+            ),
           ),
         ),
       ],
+    );
+  }
+}
+
+// ── Comparador antes/después personalizado ────────────────────────────────────
+class _BeforeAfterSlider extends StatefulWidget {
+  final Widget before;
+  final Widget after;
+  const _BeforeAfterSlider({required this.before, required this.after});
+
+  @override
+  State<_BeforeAfterSlider> createState() => _BeforeAfterSliderState();
+}
+
+class _BeforeAfterSliderState extends State<_BeforeAfterSlider> {
+  double _position = 0.5;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final w = constraints.maxWidth;
+        final h = constraints.maxHeight;
+        final divX = w * _position;
+
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onHorizontalDragUpdate: (d) {
+            setState(() {
+              _position = (_position + d.delta.dx / w).clamp(0.0, 1.0);
+            });
+          },
+          child: Stack(
+            children: [
+              // Imagen resultado (fondo completo)
+              SizedBox(width: w, height: h, child: widget.after),
+              // Imagen original (recortada a la izquierda)
+              ClipRect(
+                clipper: _SideClipper(divX, h),
+                child: SizedBox(width: w, height: h, child: widget.before),
+              ),
+              // Línea divisoria
+              Positioned(
+                left: divX - 1,
+                top: 0,
+                bottom: 0,
+                width: 2,
+                child: Container(color: kPurple),
+              ),
+              // Handle circular
+              Positioned(
+                left: divX - 20,
+                top: h / 2 - 20,
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: kPurple,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.25),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.compare_arrows_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ),
+              ),
+              // Etiqueta "Antes"
+              Positioned(left: 10, bottom: 10, child: _SliderLabel('Antes')),
+              // Etiqueta "Después"
+              Positioned(right: 10, bottom: 10, child: _SliderLabel('Después')),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _SideClipper extends CustomClipper<Rect> {
+  final double width;
+  final double height;
+  const _SideClipper(this.width, this.height);
+
+  @override
+  Rect getClip(Size size) => Rect.fromLTWH(0, 0, width, height);
+
+  @override
+  bool shouldReclip(_SideClipper old) =>
+      old.width != width || old.height != height;
+}
+
+class _SliderLabel extends StatelessWidget {
+  final String text;
+  const _SliderLabel(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.45),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
     );
   }
 }
