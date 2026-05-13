@@ -125,9 +125,12 @@ class _Wrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-      child: child,
+    return SafeArea(
+      bottom: true,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 60),
+        child: child,
+      ),
     );
   }
 }

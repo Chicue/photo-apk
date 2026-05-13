@@ -22,18 +22,31 @@ class ApiService {
       'prompt':           opts.buildPrompt(),
     });
 
-    final response = await _dio.post(
-      '$_base/api/process-photo',
-      data: formData,
-      options: Options(
-        receiveTimeout: const Duration(seconds: 120),
-        sendTimeout:    const Duration(seconds: 60),
-      ),
-    );
+    try {
+      final response = await _dio.post(
+        '$_base/api/process-photo',
+        data: formData,
+        options: Options(
+          headers: {
+            'Accept': 'application/json',
+          },
+          receiveTimeout: const Duration(seconds: 120),
+          sendTimeout:    const Duration(seconds: 60),
+        ),
+      );
 
-    if (response.statusCode == 200) {
-      return response.data['url'] as String;
+      if (response.statusCode == 200) {
+        return response.data['url'] as String;
+      }
+      throw Exception('Error del servidor: ${response.statusCode}');
+    } on DioException catch (e) {
+      if (e.response != null) {
+        throw Exception('Error del servidor (${e.response?.statusCode}). Por favor, intenta de nuevo más tarde.');
+      } else {
+        throw Exception('Error de red. Verifica que el servidor esté en ejecución y tengas conexión.');
+      }
+    } catch (e) {
+      throw Exception('Ocurrió un error inesperado al enviar la foto.');
     }
-    throw Exception('Error del servidor: ${response.statusCode}');
   }
 }

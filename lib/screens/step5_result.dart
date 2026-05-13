@@ -8,11 +8,7 @@ class Step5Result extends StatefulWidget {
   final PhotoOptions options;
   final VoidCallback onReset;
 
-  const Step5Result({
-    super.key,
-    required this.options,
-    required this.onReset,
-  });
+  const Step5Result({super.key, required this.options, required this.onReset});
 
   @override
   State<Step5Result> createState() => _Step5ResultState();
@@ -44,7 +40,7 @@ class _Step5ResultState extends State<Step5Result> {
       });
     } catch (e) {
       setState(() {
-        _error = e.toString();
+        _error = e.toString().replaceFirst('Exception: ', '');
         _loading = false;
       });
     }
@@ -56,30 +52,34 @@ class _Step5ResultState extends State<Step5Result> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 8),
-        const Text('Resultado',
-            style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
-                color: Color(0xFF1A1A2E))),
+        const Text(
+          'Resultado',
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.w800,
+            color: Color(0xFF1A1A2E),
+          ),
+        ),
         const SizedBox(height: 6),
         Text(
           _loading
               ? 'La IA está generando tu foto profesional…'
               : _error != null
-                  ? 'Ocurrió un error al procesar la imagen'
-                  : 'Tu foto está lista. Desliza para comparar',
+              ? 'Ocurrió un error al procesar la imagen'
+              : 'Tu foto está lista. Desliza para comparar',
           style: const TextStyle(fontSize: 13, color: Color(0xFF6B7280)),
         ),
         const SizedBox(height: 20),
 
         // ── Área de resultado ────────────────────────────────────────────
         SizedBox(
-          height: 350,
+          width: double.infinity,
+          height: 420,
           child: _loading
               ? _buildLoading()
               : _error != null
-                  ? _buildError()
-                  : _buildResult(),
+              ? _buildError()
+              : _buildResult(),
         ),
 
         const SizedBox(height: 12),
@@ -134,11 +134,14 @@ class _Step5ResultState extends State<Step5Result> {
             ),
           ),
           const SizedBox(height: 28),
-          const Text('Procesando con IA…',
-              style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 16,
-                  color: Color(0xFF1A1A2E))),
+          const Text(
+            'Procesando con IA…',
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 16,
+              color: Color(0xFF1A1A2E),
+            ),
+          ),
           const SizedBox(height: 8),
           const Text(
             'Esto puede tardar entre 20 y 60 segundos',
@@ -165,12 +168,17 @@ class _Step5ResultState extends State<Step5Result> {
               color: Colors.red.shade50,
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.error_outline,
-                size: 36, color: Colors.red.shade400),
+            child: Icon(
+              Icons.error_outline,
+              size: 36,
+              color: Colors.red.shade400,
+            ),
           ),
           const SizedBox(height: 16),
-          const Text('No pudimos procesar la foto',
-              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+          const Text(
+            'No pudimos procesar la foto',
+            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+          ),
           const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -193,13 +201,24 @@ class _Step5ResultState extends State<Step5Result> {
         _OptionsChip(widget.options),
         const SizedBox(height: 16),
         // Comparador deslizable
-        SizedBox(
-          height: 300,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
+        Expanded(
+          child: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
+            clipBehavior: Clip.antiAlias,
             child: ImageCompareSlider(
-              itemOne: Image.file(widget.options.photo!, fit: BoxFit.cover),
-              itemTwo: Image.network(_resultUrl!, fit: BoxFit.cover),
+              itemOne: Image.file(
+                widget.options.photo!,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
+              ),
+              itemTwo: Image.network(
+                _resultUrl!,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
+              ),
               handleSize: const Size(40, 40),
               dividerColor: kPurple,
             ),
@@ -251,11 +270,14 @@ class _Chip extends StatelessWidget {
         children: [
           Icon(icon, size: 13, color: kPurple),
           const SizedBox(width: 5),
-          Text(label,
-              style: const TextStyle(
-                  fontSize: 11,
-                  color: kPurple,
-                  fontWeight: FontWeight.w600)),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 11,
+              color: kPurple,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );
