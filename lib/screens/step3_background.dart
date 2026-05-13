@@ -19,7 +19,7 @@ class Step3Background extends StatefulWidget {
 }
 
 class _Step3BackgroundState extends State<Step3Background> {
-  static const _bgs = BackgroundType.values;
+  static const _bgs = BackgroundType.values; // [azul, blanco]
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +42,7 @@ class _Step3BackgroundState extends State<Step3Background> {
           crossAxisCount: 2,
           mainAxisSpacing: 12,
           crossAxisSpacing: 12,
-          childAspectRatio: 1.8,
+          childAspectRatio: 1.45,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           children: _bgs.map((bg) {
@@ -84,26 +84,43 @@ class _Step3BackgroundState extends State<Step3Background> {
                               : null,
                         ),
                       ),
-                      // Nombre
+                      // Nombre + descripción
                       Positioned.fill(
                         left: 56,
                         child: Container(
                           color: selected
                               ? kPurple.withOpacity(0.07)
                               : Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 10),
                           child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Expanded(
-                                child: Text(
-                                  bg.label,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 14,
-                                    color: selected
-                                        ? kPurple
-                                        : const Color(0xFF1A1A2E),
-                                  ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      bg.label,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 14,
+                                        color: selected
+                                            ? kPurple
+                                            : const Color(0xFF1A1A2E),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      bg.description,
+                                      style: const TextStyle(
+                                        fontSize: 10.5,
+                                        color: Color(0xFF9CA3AF),
+                                        height: 1.3,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                               if (selected)

@@ -195,33 +195,54 @@ class _Step5ResultState extends State<Step5Result> {
 
   // ── Resultado ────────────────────────────────────────────────────────────
   Widget _buildResult() {
+    // extra: píxeles extra a cada lado para "escapar" el padding del padre (20px)
+    // → margen final desde el borde de pantalla: 20 - 8 = 12px
+    const double extra = 8.0;
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Badges de opciones seleccionadas
+        // Badges de opciones seleccionadas (centrados)
         _OptionsChip(widget.options),
-        const SizedBox(height: 16),
-        // Comparador deslizable
+        const SizedBox(height: 14),
         Expanded(
-          child: Container(
-            width: double.infinity,
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
-            clipBehavior: Clip.antiAlias,
-            child: ImageCompareSlider(
-              itemOne: Image.file(
-                widget.options.photo!,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: double.infinity,
-              ),
-              itemTwo: Image.network(
-                _resultUrl!,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: double.infinity,
-              ),
-              handleSize: const Size(40, 40),
-              dividerColor: kPurple,
-            ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return Transform.translate(
+                offset: const Offset(-extra, 0),
+                child: SizedBox(
+                  width: constraints.maxWidth + extra * 2,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(18),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.12),
+                          blurRadius: 14,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: ImageCompareSlider(
+                      itemOne: Image.file(
+                        widget.options.photo!,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
+                      ),
+                      itemTwo: Image.network(
+                        _resultUrl!,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
+                      ),
+                      handleSize: const Size(44, 44),
+                      dividerColor: kPurple,
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ],
@@ -245,8 +266,8 @@ class _OptionsChip extends StatelessWidget {
           _Chip(opts.documentType!.label, Icons.badge_outlined),
         if (opts.backgroundType != null)
           _Chip(opts.backgroundType!.label, Icons.palette_outlined),
-        if (opts.outfitType != null)
-          _Chip(opts.outfitType!.label, Icons.checkroom_outlined),
+        if (opts.outfitName != null)
+          _Chip(opts.outfitName!, Icons.checkroom_outlined),
       ],
     );
   }

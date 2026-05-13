@@ -63,11 +63,11 @@ extension DocumentTypeX on DocumentType {
     }
   }
 
-  String get apiValue => name; // e.g. "cedulaCiudadania"
+  String get apiValue => name;
 }
 
 // ─── FONDO ────────────────────────────────────────────────────────────────────
-enum BackgroundType { azul, blanco, gris, rojo, verde }
+enum BackgroundType { azul, blanco }
 
 extension BackgroundTypeX on BackgroundType {
   String get label {
@@ -76,12 +76,15 @@ extension BackgroundTypeX on BackgroundType {
         return 'Azul';
       case BackgroundType.blanco:
         return 'Blanco';
-      case BackgroundType.gris:
-        return 'Gris';
-      case BackgroundType.rojo:
-        return 'Rojo';
-      case BackgroundType.verde:
-        return 'Verde';
+    }
+  }
+
+  String get description {
+    switch (this) {
+      case BackgroundType.azul:
+        return 'Para pasaportes y visas';
+      case BackgroundType.blanco:
+        return 'Estándar para documentos oficiales';
     }
   }
 
@@ -91,70 +94,15 @@ extension BackgroundTypeX on BackgroundType {
         return const Color(0xFF1565C0);
       case BackgroundType.blanco:
         return Colors.white;
-      case BackgroundType.gris:
-        return const Color(0xFF9E9E9E);
-      case BackgroundType.rojo:
-        return const Color(0xFFC62828);
-      case BackgroundType.verde:
-        return const Color(0xFF2E7D32);
     }
   }
 
   String get promptColor {
     switch (this) {
       case BackgroundType.azul:
-        return 'solid blue background';
+        return 'solid official blue background';
       case BackgroundType.blanco:
-        return 'solid white background';
-      case BackgroundType.gris:
-        return 'solid gray background';
-      case BackgroundType.rojo:
-        return 'solid red background';
-      case BackgroundType.verde:
-        return 'solid green background';
-    }
-  }
-
-  String get apiValue => name;
-}
-
-// ─── TRAJE ────────────────────────────────────────────────────────────────────
-enum OutfitType { hombre, mujer }
-
-extension OutfitTypeX on OutfitType {
-  String get label {
-    switch (this) {
-      case OutfitType.hombre:
-        return 'Traje Hombre';
-      case OutfitType.mujer:
-        return 'Traje Mujer';
-    }
-  }
-
-  String get description {
-    switch (this) {
-      case OutfitType.hombre:
-        return 'Traje formal de caballero';
-      case OutfitType.mujer:
-        return 'Traje formal de dama';
-    }
-  }
-
-  IconData get icon {
-    switch (this) {
-      case OutfitType.hombre:
-        return Icons.person;
-      case OutfitType.mujer:
-        return Icons.person_2;
-    }
-  }
-
-  String get promptHint {
-    switch (this) {
-      case OutfitType.hombre:
-        return 'wearing formal business suit and tie, professional attire';
-      case OutfitType.mujer:
-        return 'wearing formal business blazer, professional attire';
+        return 'solid pure white background';
     }
   }
 
@@ -166,7 +114,15 @@ class PhotoOptions {
   File? photo;
   DocumentType? documentType;
   BackgroundType? backgroundType;
-  OutfitType? outfitType;
+
+  /// Categoría de persona: 'Hombre', 'Mujer', 'Niño' o 'Niña'
+  String? outfitCategory;
+
+  /// Nombre del traje seleccionado, e.g. 'Traje Negro Clásico'
+  String? outfitName;
+
+  /// Descripción detallada del traje para el prompt de IA
+  String? outfitDescription;
 
   PhotoOptions();
 
@@ -174,30 +130,29 @@ class PhotoOptions {
       photo != null &&
       documentType != null &&
       backgroundType != null &&
-      outfitType != null;
+      outfitCategory != null &&
+      outfitName != null;
 
   /// Prompt que se envía al backend → IA
   String buildPrompt() {
-    final bgDescription = backgroundType == BackgroundType.blanco
+    final bgColor = backgroundType == BackgroundType.blanco
         ? 'pure white (#FFFFFF)'
-        : backgroundType == BackgroundType.azul
-        ? 'official blue (#1E5FA6)'
-        : backgroundType?.promptColor ?? 'white';
+        : 'official document blue (#1E5FA6)';
 
-    final attireDescription =
-        outfitType?.description ?? 'professional formal attire';
+    final category  = outfitCategory  ?? 'person';
+    final attire    = outfitName      ?? 'professional formal attire';
+    final detail    = outfitDescription != null ? ': ${outfitDescription}' : '';
+    final docLabel  = documentType?.label ?? 'official document';
 
-    final documentLabel = documentType?.label ?? 'document';
-
-    return '''Create a professional ID/document photo. 
+    return '''Create a professional ID/document photo.
 Take the person from the uploaded photo and:
 1. Remove the original background completely.
-2. Replace it with a solid $bgDescription background.
-3. Dress the person in a $attireDescription. The attire should look natural and professional.
-4. The photo should be a close-up portrait/headshot suitable for a $documentLabel document.
-5. The person should be looking straight at the camera, centered in the frame.
-6. The photo should be well-lit, sharp, and professional looking.
-7. Keep the person's face, skin tone, and features exactly as they are in the original photo.
-Make it look like a real professional document photo taken in a studio.''';
+2. Replace it with a solid $bgColor background — no shadows, no gradients.
+3. Dress the $category in "$attire"$detail. The attire must look natural, realistic and professional.
+4. Produce a close-up portrait/headshot suitable for a $docLabel.
+5. The subject must look straight at the camera, perfectly centered in the frame.
+6. The image must be well-lit, sharp and professional, as if taken in a studio.
+7. Preserve the person's face, skin tone, hair and facial features exactly as in the original photo.
+Output: a real-looking professional document photo taken in a photography studio.''';
   }
 }

@@ -39,7 +39,9 @@ class _PhotoWizardState extends State<PhotoWizard> {
       _options.photo = null;
       _options.documentType = null;
       _options.backgroundType = null;
-      _options.outfitType = null;
+      _options.outfitCategory    = null;
+      _options.outfitName        = null;
+      _options.outfitDescription = null;
     });
     _goTo(0);
   }
