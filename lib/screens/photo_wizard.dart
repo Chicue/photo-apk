@@ -6,6 +6,8 @@ import 'step2_document.dart';
 import 'step3_background.dart';
 import 'step4_outfit.dart';
 import 'step5_result.dart';
+import '../services/auth_service.dart';
+import 'login_screen.dart';
 
 class PhotoWizard extends StatefulWidget {
   const PhotoWizard({super.key});
@@ -28,7 +30,31 @@ class _PhotoWizardState extends State<PhotoWizard> {
     );
   }
 
-  void _next() => _goTo(_currentStep + 1);
+  void _next() async {
+    final targetStep = _currentStep + 1;
+
+    if (targetStep == 4) {
+      final authService = AuthService();
+      final isLoggedIn = await authService.isLoggedIn();
+
+      if (!isLoggedIn && mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LoginScreen(
+              onLoginSuccess: () {
+                Navigator.pop(context);
+                _goTo(targetStep);
+              },
+            ),
+          ),
+        );
+        return;
+      }
+    }
+
+    _goTo(targetStep);
+  }
   void _back() {
     if (_currentStep > 0) _goTo(_currentStep - 1);
   }
@@ -39,8 +65,8 @@ class _PhotoWizardState extends State<PhotoWizard> {
       _options.photo = null;
       _options.documentType = null;
       _options.backgroundType = null;
-      _options.outfitCategory    = null;
-      _options.outfitName        = null;
+      _options.outfitCategory = null;
+      _options.outfitName = null;
       _options.outfitDescription = null;
     });
     _goTo(0);

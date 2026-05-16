@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import '../models/photo_options.dart';
+import 'auth_service.dart';
 
 class ApiService {
   final Dio _dio = Dio();
@@ -25,11 +26,17 @@ class ApiService {
     });
 
     try {
+      final authService = AuthService();
+      final token = await authService.getToken();
+
       final response = await _dio.post(
         '$_base/api/process-photo',
         data: formData,
         options: Options(
-          headers: {'Accept': 'application/json'},
+          headers: {
+            'Accept': 'application/json',
+            if (token != null) 'Authorization': 'Bearer $token',
+          },
           receiveTimeout: const Duration(seconds: 120),
           sendTimeout: const Duration(seconds: 60),
         ),

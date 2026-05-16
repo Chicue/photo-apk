@@ -139,11 +139,11 @@ class PhotoOptions {
         ? 'pure white (#FFFFFF)'
         : 'official document blue (#1E5FA6)';
 
-    final category  = outfitCategory  ?? 'person';
-    final attire    = outfitName      ?? 'professional formal attire';
-    final detail    = outfitDescription != null ? ': ${outfitDescription}' : '';
-    final docLabel  = documentType?.label ?? 'official document';
-
+    final category = outfitCategory ?? 'person';
+    final attire = outfitName ?? 'professional formal attire';
+    final detail = outfitDescription != null ? ': ${outfitDescription}' : '';
+    final docLabel = documentType?.label ?? 'official document';
+    //4. Keep the exact original framing, scale, and zoom level. DO NOT zoom out or change the camera distance. The face size and position must remain identical to the uploaded photo.
     return '''Create a professional ID/document photo.
 Take the person from the uploaded photo and:
 1. Remove the original background completely.

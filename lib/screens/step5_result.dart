@@ -206,13 +206,15 @@ class _Step5ResultState extends State<Step5Result> {
             child: _BeforeAfterSlider(
               before: Image.file(
                 widget.options.photo!,
-                fit: BoxFit.cover,
+                //fit: BoxFit.cover,
+                fit: BoxFit.contain,
                 width: double.infinity,
                 height: double.infinity,
               ),
               after: Image.network(
                 _resultUrl!,
-                fit: BoxFit.cover,
+                //fit: BoxFit.cover,
+                fit: BoxFit.contain,
                 width: double.infinity,
                 height: double.infinity,
               ),
