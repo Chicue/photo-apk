@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 import '../models/photo_options.dart';
 import '../services/api_service.dart';
@@ -125,12 +126,25 @@ class _Step5ResultState extends State<Step5Result> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
-            width: 80,
-            height: 80,
-            child: CircularProgressIndicator(
-              strokeWidth: 6,
-              valueColor: AlwaysStoppedAnimation<Color>(kPurple),
-              backgroundColor: kPurple.withOpacity(0.15),
+            width: 180,
+            height: 180,
+            child: Lottie.asset(
+              'assets/images/loading.json', // Cambiado a archivo local
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) {
+                // Si aún no has descargado el archivo, mostrará el círculo morado
+                return Center(
+                  child: SizedBox(
+                    width: 60,
+                    height: 60,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 6,
+                      valueColor: AlwaysStoppedAnimation<Color>(kPurple),
+                      backgroundColor: kPurple.withOpacity(0.15),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
           const SizedBox(height: 28),

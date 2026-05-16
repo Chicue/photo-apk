@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 //import 'screens/photo_wizard.dart';
 import 'screens/splash_screen.dart';
 
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
           seedColor: const Color(0xFF6C3CE1),
           brightness: Brightness.light,
         ),
+        textTheme: GoogleFonts.outfitTextTheme(Theme.of(context).textTheme),
         useMaterial3: true,
         scaffoldBackgroundColor: const Color(0xFFF5F3FF),
         appBarTheme: const AppBarTheme(

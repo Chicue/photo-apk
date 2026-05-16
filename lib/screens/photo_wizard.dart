@@ -20,6 +20,7 @@ class _PhotoWizardState extends State<PhotoWizard> {
   final _pageController = PageController();
   final _options = PhotoOptions();
   final _authService = AuthService();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _currentStep = 0;
   bool _isLoggedIn = false;
 
@@ -45,6 +46,65 @@ class _PhotoWizardState extends State<PhotoWizard> {
         const SnackBar(content: Text('Sesión cerrada correctamente')),
       );
     }
+  }
+
+  Widget _buildEndDrawer() {
+    return Drawer(
+      child: Column(
+        children: [
+          UserAccountsDrawerHeader(
+            decoration: const BoxDecoration(
+              color: Color(0xFF6C3CE1),
+            ),
+            accountName: const Text('Mi Perfil', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+            accountEmail: const Text('Bienvenido a IDify'),
+            currentAccountPicture: CircleAvatar(
+              backgroundColor: Colors.white,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                child: Image.asset('assets/images/logo.png', fit: BoxFit.cover),
+              ),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.workspace_premium, color: Colors.amber, size: 28),
+            title: const Text('Comprar Paquetes', style: TextStyle(fontWeight: FontWeight.w600)),
+            subtitle: const Text('Obtén más fotos sin marcas'),
+            onTap: () {
+              Navigator.pop(context);
+              // TODO: Navegar a pantalla de pagos
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Próximamente: Tienda')));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.photo_library_outlined, color: Color(0xFF6C3CE1)),
+            title: const Text('Mis Fotos Anteriores'),
+            onTap: () {
+              Navigator.pop(context);
+              // TODO: Navegar a historial
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.settings_outlined, color: Color(0xFF6C3CE1)),
+            title: const Text('Configuración'),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          const Spacer(),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.logout, color: Colors.redAccent),
+            title: const Text('Cerrar sesión', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+            onTap: () {
+              Navigator.pop(context); // Cierra el drawer primero
+              _handleLogout();
+            },
+          ),
+          const SizedBox(height: 16),
+        ],
+      ),
+    );
   }
 
   void _goTo(int step) {
@@ -105,6 +165,7 @@ class _PhotoWizardState extends State<PhotoWizard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: kBg,
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -130,25 +191,11 @@ class _PhotoWizardState extends State<PhotoWizard> {
         ),
         actions: [
           if (_isLoggedIn)
-            PopupMenuButton<String>(
-              icon: const Icon(Icons.account_circle_outlined, color: Color(0xFF1A1A2E), size: 28),
-              onSelected: (value) {
-                if (value == 'logout') {
-                  _handleLogout();
-                }
+            IconButton(
+              icon: const Icon(Icons.account_circle_outlined, color: Color(0xFF1A1A2E), size: 30),
+              onPressed: () {
+                _scaffoldKey.currentState?.openEndDrawer();
               },
-              itemBuilder: (context) => [
-                const PopupMenuItem(
-                  value: 'logout',
-                  child: Row(
-                    children: [
-                      Icon(Icons.logout, color: Colors.redAccent, size: 20),
-                      SizedBox(width: 8),
-                      Text('Cerrar sesión', style: TextStyle(color: Colors.redAccent)),
-                    ],
-                  ),
-                ),
-              ],
             ),
           const SizedBox(width: 8),
         ],
@@ -160,6 +207,7 @@ class _PhotoWizardState extends State<PhotoWizard> {
           ),
         ),
       ),
+      endDrawer: _isLoggedIn ? _buildEndDrawer() : null,
       body: PageView(
         controller: _pageController,
         physics:
