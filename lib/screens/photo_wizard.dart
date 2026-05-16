@@ -19,7 +19,33 @@ class PhotoWizard extends StatefulWidget {
 class _PhotoWizardState extends State<PhotoWizard> {
   final _pageController = PageController();
   final _options = PhotoOptions();
+  final _authService = AuthService();
   int _currentStep = 0;
+  bool _isLoggedIn = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkAuthStatus();
+  }
+
+  Future<void> _checkAuthStatus() async {
+    final loggedIn = await _authService.isLoggedIn();
+    if (mounted) {
+      setState(() => _isLoggedIn = loggedIn);
+    }
+  }
+
+  Future<void> _handleLogout() async {
+    await _authService.logout();
+    _checkAuthStatus();
+    _reset(); // Regresa al paso 1 y limpia las opciones
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Sesión cerrada correctamente')),
+      );
+    }
+  }
 
   void _goTo(int step) {
     setState(() => _currentStep = step);
@@ -34,16 +60,14 @@ class _PhotoWizardState extends State<PhotoWizard> {
     final targetStep = _currentStep + 1;
 
     if (targetStep == 4) {
-      final authService = AuthService();
-      final isLoggedIn = await authService.isLoggedIn();
-
-      if (!isLoggedIn && mounted) {
+      if (!_isLoggedIn && mounted) {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => LoginScreen(
               onLoginSuccess: () {
                 Navigator.pop(context);
+                _checkAuthStatus(); // Actualiza el estado del menú
                 _goTo(targetStep);
               },
             ),
@@ -97,13 +121,37 @@ class _PhotoWizardState extends State<PhotoWizard> {
               )
             : const SizedBox.shrink(),
         title: const Text(
-          'Foto Document AI',
+          'IDify',
           style: TextStyle(
             color: Color(0xFF1A1A2E),
             fontWeight: FontWeight.w800,
             fontSize: 17,
           ),
         ),
+        actions: [
+          if (_isLoggedIn)
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.account_circle_outlined, color: Color(0xFF1A1A2E), size: 28),
+              onSelected: (value) {
+                if (value == 'logout') {
+                  _handleLogout();
+                }
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: 'logout',
+                  child: Row(
+                    children: [
+                      Icon(Icons.logout, color: Colors.redAccent, size: 20),
+                      SizedBox(width: 8),
+                      Text('Cerrar sesión', style: TextStyle(color: Colors.redAccent)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          const SizedBox(width: 8),
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(58),
           child: Container(
