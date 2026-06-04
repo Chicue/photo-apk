@@ -7,7 +7,8 @@ class ApiService {
 
   // ⚠️  Cambia esta URL por la de tu servidor Laravel
   // Emulador Android: 10.0.2.2  |  Dispositivo físico: IP local  |  Producción: tu dominio
-  static const String _base = 'http://10.0.2.2:8000';
+  //static const String API_URL = 'https://photo-api-production-ab57.up.railway.app/api';
+  static const String baseUrl = 'http://10.0.2.2:8000/api';
 
   Future<String> processPhoto(PhotoOptions opts) async {
     if (opts.photo == null) throw Exception('No hay foto seleccionada');
@@ -30,7 +31,8 @@ class ApiService {
       final token = await authService.getToken();
 
       final response = await _dio.post(
-        '$_base/api/process-photo',
+        '$API_URL/process-photo',
+        //'$baseUrl/process-photo',
         data: formData,
         options: Options(
           headers: {

@@ -4,8 +4,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class AuthService {
   // Configura aquí la IP de tu WSL o de tu red local si pruebas en un teléfono físico
   // Para emulador Android hacia WSL normalmente es 10.0.2.2 o la IP de WSL
+  //static const String baseUrl = 'https://photo-api-production-ab57.up.railway.app/api';
   static const String baseUrl = 'http://10.0.2.2:8000/api';
-  
+
   final Dio _dio = Dio();
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
   final String _tokenKey = 'auth_token';
