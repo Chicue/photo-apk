@@ -31,8 +31,8 @@ class ApiService {
       final token = await authService.getToken();
 
       final response = await _dio.post(
-        '$API_URL/process-photo',
-        //'$baseUrl/process-photo',
+        //'$API_URL/process-photo',
+        '$baseUrl/process-photo',
         data: formData,
         options: Options(
           headers: {
